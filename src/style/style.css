@@ -1,0 +1,30 @@
+p {
+  margin: 4%;
+}
+
+hr {
+  margin: 0;
+}
+
+.fields {
+  margin: 3%;
+}
+
+.result {
+  position: relative;
+  left: 10%;
+  margin: -2%;
+  float: left;
+  text-align: left;
+}
+
+.field {
+  margin: 4%;
+
+}
+
+.paper {
+  float: left;
+  width: 280px;
+  text-align: left;
+}
