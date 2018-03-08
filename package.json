@@ -5,7 +5,9 @@
   "homepage": "https://github.com/Vitalik7/Homework_13_React-redux.git",
   "dependencies": {
     "bootstrap": "^4.0.0",
-    "moment": "^2.20.1",
+    "gh-pages": "^1.1.0",
+    "immutability-helper": "^2.6.4",
+    "material-ui": "^0.20.0",
     "react": "^16.2.0",
     "react-datepicker": "^1.1.0",
     "react-dom": "^16.2.0",
@@ -13,9 +15,7 @@
     "react-scripts": "1.1.0",
     "redux": "^3.7.2",
     "redux-persist": "^5.5.0",
-    "gh-pages": "^1.1.0",
-    "immutability-helper": "^2.6.4",
-    "material-ui": "^0.20.0"
+    "validator": "^9.4.0"
   },
   "scripts": {
     "start": "react-scripts start",

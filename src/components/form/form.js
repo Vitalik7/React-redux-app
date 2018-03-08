@@ -1,98 +1,111 @@
 import React, { Component } from 'react'
 import 'bootstrap/dist/css/bootstrap.css'
 import update from 'immutability-helper'
-import DatePicker from 'react-datepicker'
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import PropTypes from 'prop-types';
 import '../../style/style.css'
 import 'react-datepicker/dist/react-datepicker-cssmodules.min.css'
-import moment from 'moment'
-import { EMAIL_VALIDATION_REGEX } from '../../constants'
+import { EMAIL_REGEX } from '../../constants'
 
 export default class Form extends Component {
     constructor (props) {
         super(props)
         this.state = {
             user: this.props.user,
-            startDate: moment(),
             errors: {},
-            valid: false
+            isValid: false
         }
         this.changeInput = this.changeInput.bind(this)
-        this.handleChange = this.handleChange.bind(this)
         this.submitData = this.submitData.bind(this)
+        this.changeDate = this.changeDate.bind(this)
     }
+
     changeInput ({target: {value, name}}) {
         let errorMessages = this.state.errors
-        let emailVal = false
+
+        let emailValidation = false
+
         if (name === 'name') {
-            errorMessages.name_error = ''
+            errorMessages.erorrName = ''
             if (value === '') {
-                errorMessages.name_error = '*required'
+                errorMessages.erorrName = '*required'
             }
         }
+
         if (name === 'email') {
-            errorMessages.email_error = ''
+            errorMessages.errorEmail = ''
             if (value === '') {
-                errorMessages.email_error = '*required'
+                errorMessages.errorEmail = '*required'
             } else {
-                emailVal = EMAIL_VALIDATION_REGEX.test(value)
+                emailValidation = EMAIL_REGEX.test(value)
             }
-            if (!emailVal) {
-                errorMessages.email_error = 'Write correct email'
+            if (!emailValidation) {
+                errorMessages.errorEmail = 'Write correct email'
             }
         }
+
         if (name === 'postcode') {
-            errorMessages.postcode_error = ''
+            errorMessages.errorPostcode = ''
             if (value === '') {
-                errorMessages.postcode_error = '*required'
+                errorMessages.errorPostcode = '*required'
             }
         }
+
         if (name === 'dateofbirth') {
             if (value === null) {
-                errorMessages.date_error = '*required'
+                errorMessages.errorDate = '*required'
             }
         }
+
         this.setState({
             errors: errorMessages
         })
+
         this.setState({
             user: update(this.state.user, {
                 [name]: {$set: value}
             })
         })
     }
-    handleChange (target) {
-        this.setState({
-            startDate: target,
-            user: update(this.state.user, {
-                'dateofbirth': {$set: moment(target).format("YYYY/MM/DD")}
-            })
-        })
 
+    changeDate ({target: {value}}) {
+      this.props.changeStateProps('date', value)
     }
+
     submitData (e) {
         e.preventDefault()
         let errorMessages = {}
-        let emailVal = true
+
+        let emailValidation = true
+
         if (this.state.user.name === '') {
-            errorMessages.name_error = '*required'
+            errorMessages.erorrName = '*required'
         }
         if (this.state.user.email === '') {
-            errorMessages.email_error = '*required'
+            errorMessages.errorEmail = '*required'
         } else {
-            emailVal = EMAIL_VALIDATION_REGEX.test(this.state.user.email)
+            emailValidation = EMAIL_REGEX.test(this.state.user.email)
         }
+
+        if (this.state.user.phone === '') {
+            errorMessages.errorPhone = 'field is empty'
+            Form.propTypes = {
+              phone: PropTypes.number
+            }
+        }
+
         if (this.state.user.postcode === '') {
-            errorMessages.postcode_error = '*required'
+            errorMessages.errorPostcode = '*required'
         }
         if (this.state.user.dateofbirth === null) {
-            errorMessages.date_error = '*required'
+            errorMessages.errorDate = '*required'
         }
-        if (!emailVal) {
-            errorMessages.email_error = 'Write correct email'
+        if (!emailValidation) {
+            errorMessages.errorEmail = 'Write correct email'
         }
+
         this.setState({
             errors: errorMessages
         })
@@ -110,26 +123,26 @@ export default class Form extends Component {
         }
     }
     render () {
+
         return (
             <div>
                 <div className="fields">
                   <Paper className="paper" zDepth={5} rounded={false} >
                     <div className="field">
-                      <label htmlFor="name">Name (required):</label>
+                      <label>Name (required):</label>
                       <TextField
                         type="text"
                         onChange={this.changeInput}
-                        onBlur={this.changeInput}
                         hintText="Write name"
                         floatingLabelText="Label Name"
                         name="name"
                         value={this.state.user.name}
                       />
-                      <span className="error_message">{this.state.errors.name_error}</span>
+                      <span className="error_message">{this.state.errors.erorrName}</span>
                     </div>
 
                     <div className="field">
-                      <label htmlFor="email">Email (required):</label>
+                      <label>Email (required):</label>
                       <TextField
                         type="email"
                         hintText="test@test.com"
@@ -139,24 +152,26 @@ export default class Form extends Component {
                         onBlur={this.changeInput}
                         value={this.state.user.email}
                       />
-                      <span className="error_message">{this.state.errors.email_error}</span>
+                      <span className="error_message">{this.state.errors.errorEmail}</span>
                     </div>
 
                     <div className="field">
-                      <label htmlFor="phone">Phone Number:</label>
+                      <label>Phone Number:</label>
                       <TextField
-                          type="number"
+                          type="tel"
                           onChange={this.changeInput}
                           onBlur={this.changeInput}
                           hintText="(380)**-**-***"
                           floatingLabelText="Label Phone"
                           name="phone"
                           value={this.state.user.phone}
+                           maxLength="12"
                       />
+                      <span className="error_message">{this.state.errors.errorPhone}</span>
                     </div>
 
                     <div className="field">
-                      <label htmlFor="address">Address:</label>
+                      <label>Address:</label>
                       <TextField
                           type="email"
                           hintText="Country, City etc."
@@ -169,7 +184,7 @@ export default class Form extends Component {
                     </div>
 
                     <div className="field">
-                      <label htmlFor="postcode">Post Code (required):</label>
+                      <label>Post Code (required):</label>
                       <TextField
                           type="text"
                           onChange={this.changeInput}
@@ -179,21 +194,18 @@ export default class Form extends Component {
                           name="postcode"
                           value={this.state.user.postcode}
                       />
-                      <span className="error_message">{this.state.errors.postcode_error}</span>
+                      <span className="error_message">{this.state.errors.errorPostcode}</span>
                     </div>
 
                     <div className="field">
-                      <label htmlFor="email">Date of Birth (required):</label>
-                      <DatePicker
-                          selected={this.state.startDate}
-                          onChange={this.handleChange}
+                      <label>Date of Birth (required):</label>
+                      <TextField
+                          type="date"
+                          onChange={this.changeDate}
                           onBlur={this.changeInput}
-                          disabledKeyboardNavigation
                           name="dateofbirth"
-                          dateFormat="YYYY/MM/DD"
-                          value={this.state.user.dateofbirth}
                       />
-                      <span className="error_message">{this.state.errors.date_error}</span>
+                      <span className="error_message">{this.state.errors.errorDate}</span>
                     </div>
 
                     <RaisedButton
