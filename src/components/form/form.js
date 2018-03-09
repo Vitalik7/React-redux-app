@@ -18,7 +18,7 @@ export default class Form extends Component {
             isValid: false
         }
         this.changeInput = this.changeInput.bind(this)
-        this.submitData = this.submitData.bind(this)
+        this.save = this.save.bind(this)
         this.changeDate = this.changeDate.bind(this)
     }
 
@@ -30,7 +30,16 @@ export default class Form extends Component {
         if (name === 'name') {
             errorMessages.erorrName = ''
             if (value === '') {
-                errorMessages.erorrName = '*required'
+                errorMessages.erorrName = '*required';
+            }
+        } else if (name === 'postcode') {
+          errorMessages.errorPostcode = ''
+          if (value === '') {
+              errorMessages.errorPostcode = '*required'
+          }
+        } else if (name === 'dateofbirth') {
+            if (value === undefined) {
+                errorMessages.errorDate = '*required'
             }
         }
 
@@ -46,24 +55,8 @@ export default class Form extends Component {
             }
         }
 
-        if (name === 'postcode') {
-            errorMessages.errorPostcode = ''
-            if (value === '') {
-                errorMessages.errorPostcode = '*required'
-            }
-        }
-
-        if (name === 'dateofbirth') {
-            if (value === null) {
-                errorMessages.errorDate = '*required'
-            }
-        }
-
         this.setState({
-            errors: errorMessages
-        })
-
-        this.setState({
+            errors: errorMessages,
             user: update(this.state.user, {
                 [name]: {$set: value}
             })
@@ -74,34 +67,26 @@ export default class Form extends Component {
       this.props.changeStateProps('date', value)
     }
 
-    submitData (e) {
+    save (e) {
         e.preventDefault()
         let errorMessages = {}
 
         let emailValidation = true
 
-        if (this.state.user.name === '') {
+        if (this.state.user.name === '' && this.state.user.email === '') {
             errorMessages.erorrName = '*required'
-        }
-        if (this.state.user.email === '') {
             errorMessages.errorEmail = '*required'
         } else {
             emailValidation = EMAIL_REGEX.test(this.state.user.email)
         }
 
-        if (this.state.user.phone === '') {
-            errorMessages.errorPhone = 'field is empty'
-            Form.propTypes = {
-              phone: PropTypes.number
-            }
-        }
-
         if (this.state.user.postcode === '') {
             errorMessages.errorPostcode = '*required'
+        } else if (this.state.user.dateofbirth === null) {
+          errorMessages.errorDate = '*required'
         }
-        if (this.state.user.dateofbirth === null) {
-            errorMessages.errorDate = '*required'
-        }
+
+
         if (!emailValidation) {
             errorMessages.errorEmail = 'Write correct email'
         }
@@ -211,7 +196,7 @@ export default class Form extends Component {
                     <RaisedButton
                       label="Save"
                       primary={true}
-                      onClick={this.submitData}
+                      onClick={this.save}
                     />
 
                   </Paper>
